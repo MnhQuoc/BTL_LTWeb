@@ -24,16 +24,27 @@
     <div class="product-grid">
         <?php foreach ($featured as $product): ?>
             <article class="product-card">
-                <div class="product-image"><?= mb_substr($product['name'], 0, 1) ?></div>
+                <div class="product-image">
+                    <?php if (!empty($product['image'])): ?>
+                        <img src="<?= e($product['image']) ?>" alt="<?= e($product['name']) ?>">
+                    <?php else: ?>
+                        <?= e(mb_substr($product['name'], 0, 1)) ?>
+                    <?php endif; ?>
+                </div>
                 <div class="product-body">
                     <h3><a href="/products/<?= e($product['slug']) ?>"><?= e($product['name']) ?></a></h3>
                     <p><?= e($product['short_description']) ?></p>
                     <div class="product-footer">
                         <strong><?= money($product['price']) ?></strong>
-                        <form method="post" action="/cart/add">
-                            <input type="hidden" name="id" value="<?= (int) $product['id'] ?>">
-                            <button type="submit">Thêm</button>
-                        </form>
+                        <?php if ((int) $product['is_available'] === 1 && (int) $product['stock'] > 0): ?>
+                            <form method="post" action="/cart/add">
+                                <input type="hidden" name="id" value="<?= (int) $product['id'] ?>">
+                                <input type="hidden" name="return_to" value="/">
+                                <button type="submit">Thêm</button>
+                            </form>
+                        <?php else: ?>
+                            <span class="status">Tạm hết món</span>
+                        <?php endif; ?>
                     </div>
                 </div>
             </article>

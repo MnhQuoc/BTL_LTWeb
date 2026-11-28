@@ -1,7 +1,7 @@
 <section class="container page">
     <h1><?= $product['id'] ? 'Sửa sản phẩm' : 'Thêm sản phẩm' ?></h1>
     <?php if ($error): ?><div class="alert alert-error"><?= e($error) ?></div><?php endif; ?>
-    <form class="form-card" method="post" action="/seller/products/save" data-validate>
+    <form class="form-card" method="post" action="/seller/products/save" enctype="multipart/form-data" data-validate>
         <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
         <input type="hidden" name="id" value="<?= (int) $product['id'] ?>">
         <label>Tên sản phẩm
@@ -26,6 +26,15 @@
         <label>Mô tả chi tiết
             <textarea name="description"><?= e($product['description']) ?></textarea>
         </label>
+        <label>Ảnh món ăn (JPG, PNG hoặc WebP, tối đa 5 MB)
+            <input type="file" name="image" accept="image/jpeg,image/png,image/webp">
+        </label>
+        <?php if (!empty($product['image'])): ?>
+            <div class="seller-image-preview">
+                <span>Ảnh hiện tại</span>
+                <img src="<?= e($product['image']) ?>" alt="<?= e($product['name']) ?>">
+            </div>
+        <?php endif; ?>
         <label>Giá (VND)
             <input type="number" name="price" value="<?= e($product['price']) ?>" min="1" step="1" required>
         </label>

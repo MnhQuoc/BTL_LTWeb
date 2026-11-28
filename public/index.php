@@ -16,33 +16,59 @@ $routes = [
     'GET /about' => 'about',
     'GET /products' => 'products',
     'GET /pricing' => 'pricing',
-    'GET /news' => 'news',
     'GET /faq' => 'faq',
-    'GET /contact' => 'contact',
+    'GET /news' => 'news',
+    'GET /robots.txt' => 'robots',
+    'GET /sitemap.xml' => 'sitemap',
     'GET /cart' => 'cart',
     'GET /checkout' => 'checkout',
     'GET /login' => 'login',
     'GET /register' => 'register',
     'GET /profile' => 'profile',
+    'GET /profile/password' => 'changePassword',
+    'GET /orders' => 'orderHistory',
     'GET /logout' => 'logout',
     'GET /admin' => 'admin',
     'GET /seller' => 'seller',
+    'GET /seller/revenue' => 'sellerRevenue',
     'GET /seller/products/new' => 'sellerProductNew',
-    'POST /contact' => 'contactPost',
     'POST /register' => 'registerPost',
     'POST /login' => 'loginPost',
     'POST /cart/add' => 'cartAdd',
     'POST /cart/update' => 'cartUpdate',
     'POST /checkout' => 'checkoutPost',
     'POST /profile' => 'profilePost',
+    'POST /profile/password' => 'changePasswordPost',
     'POST /seller/products/save' => 'sellerProductSave',
     'POST /seller/products/delete' => 'sellerProductDelete',
+    'POST /seller/products/availability' => 'sellerProductAvailability',
     'POST /seller/orders/status' => 'sellerOrderItemStatus',
+    'POST /news/comment' => 'newsCommentPost',
+    'POST /admin/posts/save' => 'adminPostSave',
+    'POST /admin/posts/delete' => 'adminPostDelete',
 ];
 $key = $method . ' ' . $path;
 
 if (isset($routes[$key])) {
     $controller->{$routes[$key]}();
+    exit;
+}
+
+if ($method === 'GET' && preg_match('#^/admin/(users|products|orders|faqs|posts|comments)$#', $path, $matches)) {
+    $controller->adminSection($matches[1]);
+    exit;
+}
+if ($method === 'GET' && preg_match('#^/admin/posts/([0-9]+)/edit$#', $path, $matches)) {
+    $controller->adminPostEdit((int) $matches[1]);
+    exit;
+}
+if ($method === 'GET' && $path === '/admin/posts/new') {
+    $controller->adminPostNew();
+    exit;
+}
+
+if ($method === 'POST' && $path === '/admin/action') {
+    $controller->adminAction();
     exit;
 }
 
@@ -56,7 +82,7 @@ if ($method === 'GET' && str_starts_with($path, '/products/')) {
     exit;
 }
 if ($method === 'GET' && str_starts_with($path, '/news/')) {
-    $controller->postDetail(substr($path, strlen('/news/')));
+    $controller->newsDetail(substr($path, strlen('/news/')));
     exit;
 }
 http_response_code(404);
